@@ -1,42 +1,55 @@
 <template>
-  <div>
-    <h1>Register</h1>
-    <div class="register">
-      <input type="email" name="email" v-model="email" placeholder="Email" required/><br>
-      <input type="password" name="password" v-model="password" placeholder="Password" required/><br>
-      <button @click="register">Register</button>
-    </div>
-  </div>
+  <v-layout column>
+    <v-flex xs6 offset-xs3>
+      <div class="white elevation-2">
+        <v-toolbar flat dense class="cyan" dark>
+          <v-toolbar-title>Register</v-toolbar-title>
+
+        </v-toolbar>
+        <div class="pl-4 pr-4 pt-2 pb-2">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" name="email" id="email" v-model="email" placeholder="Email" required/><br>
+            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" v-model="password" placeholder="Password" required/><br>
+          </div>
+          <div class="error" v-html="error">
+
+          </div>
+          <button class="btn btn-primary" @click="register">Register</button>
+        </div>
+        </div>
+    </v-flex>
+  </v-layout>
 </template>
 
 <script>
   import AuthenticationService from '@/services/AuthenticationService'
+  import VToolbar from "vuetify/es5/components/VToolbar/VToolbar";
   export default {
 
+    components: {VToolbar},
     data () {
       return {
         email: '',
         password: ''
       }
     },
-    watch: {
-      email (value) {
-        console.log('email has changed ', value)
-      }
-    },
     methods: {
       async register () {
-        const response = await AuthenticationService.register({
-          email: this.email,
-          password: this.password
-        })
-        console.log(response.data)
+        try {
+          await AuthenticationService.register({
+            email: this.email,
+            password: this.password,
+            error: null
+          })
+        } catch (err) {
+          this.error = err.response.data.error
+        }
       }
-    },
-    mounted () {
-      setTimeout(() => {
-        this.email = 'Hello World!!!'
-      }, 2000)
     }
   }
 </script>
@@ -46,8 +59,8 @@
     text-align: center;
   }
 
-  .register{
-    margin-left: 50%;
+  .error{
+    color: red;
   }
 </style>
 
